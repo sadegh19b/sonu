@@ -5,15 +5,21 @@
 | Component | Version | Status |
 |-----------|---------|--------|
 | **Desktop (Electron)** | 3.7.0 | Stable |
-| **Desktop v2 (Tauri)** | 2.2.1 | Stable |
+| **Desktop v2 (Tauri)** | 2.2.2 | Stable |
 
-**Last Updated**: 2026-02-28
+**Last Updated**: 2026-06-23
 
 ## Version History
 
 ### Desktop v2 (Tauri)
 
-#### Version 2.2.1 (Current)
+#### Version 2.2.2 (Current)
+- Custom window controls (Close, Minimize, Maximize/Restore)
+- Custom app icon from icon.png (all platform sizes)
+- Persian Whisper model (whisper-large-fa)
+- Fixed missing Tauri v2 window permissions
+
+#### Version 2.2.1
 - Notes mic button: click-to-record with visual recording state
 - GitHub Actions: 3 clean workflows replacing 13 broken ones (CI, Build, Release)
 - Documentation overhaul: 35+ stale files removed, essential docs rewritten for Tauri v2
@@ -70,9 +76,9 @@ SONU follows [Semantic Versioning](https://semver.org/) (SemVer):
 
 | File | Location |
 |------|----------|
-| `apps/tauri-v2/package.json` | `"version": "2.2.0"` |
-| `apps/tauri-v2/src-tauri/Cargo.toml` | `version = "2.2.0"` |
-| `apps/tauri-v2/src-tauri/tauri.conf.json` | `"version": "2.2.0"` |
+| `apps/tauri-v2/package.json` | `"version": "2.2.2"` |
+| `apps/tauri-v2/src-tauri/Cargo.toml` | `version = "2.2.2"` |
+| `apps/tauri-v2/src-tauri/tauri.conf.json` | `"version": "2.2.2"` |
 
 ### Desktop App (Electron)
 

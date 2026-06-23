@@ -203,6 +203,26 @@ impl ModelManager {
             },
         );
 
+        // Persian fine-tuned Whisper model (bundled with the app)
+        available_models.insert(
+            "whisper-large-fa".to_string(),
+            ModelInfo {
+                id: "whisper-large-fa".to_string(),
+                name: "Whisper Large Farsi".to_string(),
+                description: "Whisper Large V3 Turbo fine-tuned for Persian.".to_string(),
+                filename: "ggml-whisper-large-fa-v1.bin".to_string(),
+                url: None, // Bundled locally, no download needed
+                size_mb: 1500,
+                is_downloaded: false, // Will be updated by update_download_status()
+                is_downloading: false,
+                partial_size: 0,
+                is_directory: false,
+                engine_type: EngineType::Whisper,
+                accuracy_score: 0.90,
+                speed_score: 0.35,
+            },
+        );
+
         let manager = Self {
             app_handle: app_handle.clone(),
             models_dir,
@@ -233,7 +253,7 @@ impl ModelManager {
 
     fn migrate_bundled_models(&self) -> Result<()> {
         // Check for bundled models and copy them to user directory
-        let bundled_models = ["ggml-small.bin"]; // Add other bundled models here if any
+        let bundled_models = ["ggml-small.bin", "ggml-whisper-large-fa-v1.bin"];
 
         for filename in &bundled_models {
             let bundled_path = self.app_handle.path().resolve(

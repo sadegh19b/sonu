@@ -10,6 +10,7 @@ import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import Footer from "./components/footer";
 import Onboarding from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
+import TitleBar from "./components/TitleBar";
 import { useSettings } from "./hooks/useSettings";
 import { commands } from "@/bindings";
 
@@ -18,8 +19,6 @@ const renderSettingsContent = (section: SidebarSection) => {
     SECTIONS_CONFIG[section]?.component || SECTIONS_CONFIG.general.component;
   return <ActiveComponent />;
 };
-
-import { getCurrentWindow } from "@tauri-apps/api/window";
 
 function App() {
   const [currentSection, setCurrentSection] = useState<SidebarSection>("home");
@@ -47,12 +46,6 @@ function App() {
     checkOnboarding();
   }, []);
 
-  // Maximize handler
-  const handleDoubleClick = async () => {
-    const appWindow = getCurrentWindow();
-    await appWindow.toggleMaximize();
-  };
-
   if (showOnboarding) {
     return (
       <ErrorBoundary>
@@ -67,12 +60,8 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="dark h-screen flex flex-col select-none cursor-default bg-transparent">
-        {/* Custom Drag Region / Title Bar Overlay */}
-        <div
-          className="fixed top-0 left-0 w-full h-8 z-50 bg-transparent"
-          data-tauri-drag-region
-          onDoubleClick={handleDoubleClick}
-        />
+        {/* Custom Title Bar with window controls */}
+        <TitleBar />
 
         <Toaster
           theme="dark"

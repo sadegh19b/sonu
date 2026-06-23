@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.2] - 2026-06-23
+
+### Added
+- **Custom window controls**: Close, Minimize, Maximize/Restore buttons with proper drag region
+- **App icon**: Replaced default Tauri icon with custom `icon.png` (all platform sizes: PNG, ICO, ICNS, Android, iOS, Windows Store)
+- **Persian Whisper model** (`whisper-large-fa`): Added to model list for Farsi speech recognition
+
+### Fixed
+- Window controls and drag not working due to missing `core:window:*` permissions in Tauri v2 capabilities
+- Button clicks triggering window drag (fixed with `stopPropagation`)
+
+---
+
 ## [2.2.1] - 2026-02-28
 
 ### Tauri App - CI/CD & Documentation Cleanup

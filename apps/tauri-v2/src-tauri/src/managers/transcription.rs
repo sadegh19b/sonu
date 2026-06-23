@@ -13,6 +13,7 @@ use transcribe_rs::{
     engines::parakeet::{
         ParakeetEngine, ParakeetInferenceParams, ParakeetModelParams, TimestampGranularity,
     },
+    engines::whisper::{WhisperEngine, WhisperInferenceParams, WhisperModelParams},
     TranscriptionEngine,
 };
 
@@ -48,6 +49,7 @@ pub struct ModelStateEvent {
 
 enum LoadedEngine {
     Parakeet(ParakeetEngine),
+    Whisper(WhisperEngine),
 }
 
 #[derive(Clone)]
@@ -185,6 +187,9 @@ impl TranscriptionManager {
             if let Some(ref mut loaded_engine) = *engine {
                 match loaded_engine {
                     LoadedEngine::Parakeet(ref mut e) => e.unload_model(),
+                    LoadedEngine::Whisper(_) => {
+                        // WhisperEngine doesn't have unload_model; dropping it frees memory
+                    }
                 }
             }
             *engine = None; // Drop the engine to free memory
@@ -264,7 +269,7 @@ impl TranscriptionManager {
 
         let model_path = self.model_manager.get_model_path(model_id)?;
 
-        // Create appropriate engine based on model type (SONU uses Parakeet only)
+        // Create appropriate engine based on model type
         let loaded_engine = match model_info.engine_type {
             EngineType::Parakeet => {
                 let mut engine = ParakeetEngine::new();
@@ -285,6 +290,26 @@ impl TranscriptionManager {
                         anyhow::anyhow!(error_msg)
                     })?;
                 LoadedEngine::Parakeet(engine)
+            }
+            EngineType::Whisper => {
+                let mut engine = WhisperEngine::new();
+                engine
+                    .load_model_with_params(&model_path, WhisperModelParams::default())
+                    .map_err(|e| {
+                        let error_msg =
+                            format!("Failed to load whisper model {}: {}", model_id, e);
+                        let _ = self.app_handle.emit(
+                            "model-state-changed",
+                            ModelStateEvent {
+                                event_type: "loading_failed".to_string(),
+                                model_id: Some(model_id.to_string()),
+                                model_name: Some(model_info.name.clone()),
+                                error: Some(error_msg.clone()),
+                            },
+                        );
+                        anyhow::anyhow!(error_msg)
+                    })?;
+                LoadedEngine::Whisper(engine)
             }
             _ => {
                 let error_msg = format!("Unsupported engine type for model {}", model_id);
@@ -442,6 +467,16 @@ impl TranscriptionManager {
                     parakeet_engine
                         .transcribe_samples(audio, Some(params))
                         .map_err(|e| anyhow::anyhow!("Parakeet transcription failed: {}", e))?
+                }
+                LoadedEngine::Whisper(whisper_engine) => {
+                    let params = WhisperInferenceParams {
+                        language: Some("fa".to_string()),
+                        translate: settings.translate_to_english,
+                        ..Default::default()
+                    };
+                    whisper_engine
+                        .transcribe_samples(audio, Some(params))
+                        .map_err(|e| anyhow::anyhow!("Whisper transcription failed: {}", e))?
                 }
             }
         };

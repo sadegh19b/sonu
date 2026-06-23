@@ -1,5 +1,43 @@
 # Changelog
 
+## [2.2.2] - 2026-06-23
+
+### Custom Window Controls & App Icon Update
+
+### Added
+- **Custom TitleBar component** (`src/components/TitleBar.tsx`):
+  - Close button (hides window to tray, consistent with existing close behavior)
+  - Minimize button
+  - Maximize / Restore toggle button (icon changes based on window state)
+  - "SONU" label on the left side
+  - Draggable region — window can be moved by dragging the title bar
+  - Double-click on title bar toggles maximize
+- **Window control permissions** in `capabilities/default.json`:
+  - Added `core:window:allow-minimize`, `allow-maximize`, `allow-unmaximize`, `allow-toggle-maximize`, `allow-close`, `allow-hide`, `allow-is-maximized`, `allow-start-dragging`, `allow-set-focus`
+  - These permissions were missing, causing window controls and drag to silently fail
+
+### Fixed
+- **Drag region and button conflict**: TitleBar buttons no longer trigger window drag — `onMouseDown` + `stopPropagation()` prevents drag event from reaching parent
+- **Removed `data-tauri-drag-region="false"` workaround**: Replaced with proper event propagation control
+- **Drag region only on non-interactive areas**: Only the title text, spacer, and logo area have `data-tauri-drag-region` — buttons are outside drag region
+
+### Changed
+- **App icon updated** from default Tauri icon to custom `icon.png`:
+  - Generated all required PNG sizes: 32×32, 64×64, 128×128, 128×128@2x (256), 192×192, 512×512
+  - Generated `icon.ico` (Windows) with 7 sizes: 16–256px
+  - Generated `icon.icns` (macOS) with all standard Apple sizes
+  - Generated Windows Store logos (Square30 through Square310, StoreLogo)
+  - Generated Android mipmap icons (mdpi through xxxhdpi) with adaptive foreground
+  - Generated iOS AppIcon set (20px through 1024px)
+  - Generated tray icons (22×22, 32×32) and maskable icon (512×512)
+  - Updated `tauri.conf.json` bundle icon list to include all new sizes
+- **App.tsx** simplified:
+  - Removed old fixed drag region (`<div data-tauri-drag-region>`)
+  - Removed unused `getCurrentWindow` import and `handleDoubleClick` handler
+  - Replaced with `<TitleBar />` component
+
+---
+
 ## [2.1.0] - 2026-01-13 (SONU Release)
 
 ### Added
